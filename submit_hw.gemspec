@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'submit_hw'
-  s.version     = '0.0.0'
+  s.version     = '0.0.1'
   s.date        = '2014-07-31'
   s.summary     = "Submitting homework for GA's WDI."
   s.description = ""
