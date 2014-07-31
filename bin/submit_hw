@@ -20,4 +20,4 @@ github_name = `git config --get user.name`.strip
 upstream = `git config --get remote.upstream.url`.strip.match(/:(.*[^\.git])/).captures.first
 branch = "#{upstream}:#{github_name}"
 
-puts `hub pull-request -m $'HW\n\n#{data.to_json}' -b '#{branch}'`
+puts `hub pull-request -m $'HW #{Time.now.strftime('%Y-%m-%d')}\n\n#{data.to_json}' -b '#{branch}'`
