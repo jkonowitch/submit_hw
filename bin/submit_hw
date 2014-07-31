@@ -1,0 +1,25 @@
+#!/usr/bin/env ruby
+require 'json'
+
+hub_not_installed = `brew list --versions hub`.empty?
+
+if hub_not_installed
+  puts "Please install the \`hub\` utility."
+  exit(false)
+end
+
+puts "Week? [Week 1 = 01]"
+week = gets.gsub(/\W+/, '')
+
+puts "Day? [Day 3 = 03]"
+day = gets.gsub(/\W+/, '')
+
+data = {}
+
+puts "Completeness [1 - 5]"
+data["completeness"] = gets.gsub(/\W+/, '')
+
+puts "Comfortability [1 - 5]"
+data["comfortability"] = gets.gsub(/\W+/, '')
+
+puts `hub pull-request -m $'HW #{week}-#{day}\n\n#{data.to_json}'`
