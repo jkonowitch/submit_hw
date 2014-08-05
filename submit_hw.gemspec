@@ -10,4 +10,6 @@ Gem::Specification.new do |s|
   s.homepage    = 'https://github.com/jkonowitch/submit_hw'
   s.license       = 'MIT'
   s.executables << 'submit_hw'
+
+  s.add_runtime_dependency 'hub', '>= 1.12'
 end
