@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby
 require 'json'
 
-hub_not_installed = `brew list --versions hub`.empty?
+hub_not_installed = `which hub`.empty?
 
 if hub_not_installed
   puts "Please install the \`hub\` utility."
