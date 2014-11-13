@@ -1,7 +1,8 @@
 #!/usr/bin/env ruby
+require 'pry'
 require 'json'
 
-hub_not_installed = `brew list --versions hub`.empty?
+hub_not_installed = `which hub`.empty?
 
 if hub_not_installed
   puts "Please install the \`hub\` utility."
@@ -11,10 +12,15 @@ end
 data = {}
 
 puts "Completeness [1 - 5]"
-data["completeness"] = gets.gsub(/\W+/, '')
+data["completeness"] = gets.gsub(/\W+/, '').to_i
 
 puts "Comfortability [1 - 5]"
-data["comfortability"] = gets.gsub(/\W+/, '')
+data["comfortability"] = gets.gsub(/\W+/, '').to_i
+
+unless data.values.all? { |n| (1..5).member?(n) }
+  puts "Invalid numbers (only 1 - 5)"
+  exit(false)
+end
 
 github_name = `git config --get user.name`.strip
 upstream = `git config --get remote.upstream.url`.strip.match(/:(.*[^\.git])/).captures.first
