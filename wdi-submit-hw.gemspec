@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name        = 'wdi-submit-hw'
-  s.version     = '0.0.1'
+  s.version     = '0.0.0'
   s.date        = '2014-11-17'
   s.summary     = "Submitting homework for GA's WDI."
   s.description = ""
@@ -11,5 +11,5 @@ Gem::Specification.new do |s|
   s.license     = 'MIT'
   s.executables << 'submit_hw'
 
-  s.add_runtime_dependency "hub", "~> 1.12.2"
+  s.add_runtime_dependency "hub", "~> 1.12"
 end
