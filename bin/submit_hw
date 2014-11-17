@@ -29,8 +29,8 @@ begin
 rescue NoMethodError
   # Upstream has not been set
   puts "You haven't configured a remote that points to the upstream repository!".red
-  puts "Run the following:"
-  puts "$ git remote add upstream [CLASS_REPO_SSH_URL]"
+  puts "Run the following then try again."
+  puts "git remote add upstream CLASS_REPO_SSH_URL"
   exit(false)
 end
 
