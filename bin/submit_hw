@@ -1,18 +1,21 @@
 #!/usr/bin/env ruby
-
 require 'json'
 require 'colorize'
+require 'pry'
 
-# we could move this to installfest too...
+# TODO (phlco) remove Hub dependency and use github gem/api directly
+
+# TODO (phlco) we could move this to installfest too
 unless ENV['HUMAN_NAME']
   puts "Please enter your full name (first and last)" # we could say lowercase here.
   human_name = gets.chomp.strip.downcase.gsub(' ', '_')
-  system("echo '\nexport HUMAN_NAME=#{human_name}\n' >> ~/.bash_profile && source ~/.bash_profile")
+  system("export HUMAN_NAME=#{human_name}")
+  system("echo '\nexport HUMAN_NAME=#{human_name}\n' >> ~/.bash_profile")
 end
 
 data = {}
 
-print "How many parts of the homework did you finish? "
+print "\nHow many parts of the homework did you finish? "
 data["completeness"] = gets
 
 begin
@@ -32,10 +35,13 @@ unless (1..5).member?(data["comfortability"])
 end
 
 # github_name  = `git config --get user.name`.strip
-github_name  = ENV['HUMAN_NAME']
+github_name = ENV['HUMAN_NAME'] || human_name
+
+puts "Pushing your work to your fork.\n".green
+`git push origin master`
 
 begin
-  upstream = `git config --get remote.upstream.url`.strip.match(/:(.*[^\.git])/).captures.first
+  upstream = `git config --get remote.upstream.url`.strip.match(/:(.*)\.git/).captures.first
 rescue NoMethodError
   # Upstream has not been set
   puts "You haven't configured a remote that points to the upstream repository!".red
@@ -46,7 +52,15 @@ end
 
 branch       = "#{upstream}:#{github_name}"
 submitted_at = Time.now.strftime('%Y-%m-%d')
+submission   = `hub pull-request -m $'HW #{submitted_at}\n\n#{data.to_json}' -b '#{branch}' 2>&1` # print to STDOUT
 
-puts `hub pull-request -m $'HW #{submitted_at}\n\n#{data.to_json}' -b '#{branch}'`
-
-puts "Thanks for submitting your homework.".green
+if submission.include? "pull request already exists"
+  puts "You already have an outstanding pull request which the instructors have yet to merge! Have a great day.".yellow
+elsif submission.include? "Error creating pull request: Internal Server Error (HTTP 500)"
+  puts "We may not have an upstream branch for you yet. Contact your Instructors!".yellow
+elsif submission.include? "No commits between"
+  # NOTE: (phlco) we'll ignore this for now becuase we probably won't get this error.
+  puts "You haven't commited any changes.".red
+else
+  puts "Thanks for submitting your homework.".green
+end
