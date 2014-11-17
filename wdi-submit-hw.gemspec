@@ -12,4 +12,5 @@ Gem::Specification.new do |s|
   s.executables << 'submit_hw'
 
   s.add_runtime_dependency "hub", "~> 1.12.2"
+  s.add_runtime_dependency "colorize", '~> 0.7.3'
 end
