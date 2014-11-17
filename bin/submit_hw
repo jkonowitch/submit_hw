@@ -1,27 +1,42 @@
 #!/usr/bin/env ruby
 
 require 'json'
+require 'colorize'
 
 data = {}
 
-puts "How many parts of the homework did you finish?"
+print "How many parts of the homework did you finish? "
 data["completeness"] = gets.gsub(/\W+/, '').to_i
 
 unless data["completeness"].is_a?(Integer) && data["completeness"] >= 0
-  puts "Invalid: not an integer (0 or greater)"
+  puts "Invalid: not an integer (0 or greater)".red
   exit(false)
 end
 
-puts "Comfortability [1 - 3]"
+print "Comfortability [1 - 3]? "
 data["comfortability"] = gets.gsub(/\W+/, '').to_i
 
 unless (1..5).member?(data["comfortability"])
-  puts "Invalid numbers (only 1 - 3)"
+  puts "Invalid numbers (only 1 - 3)".red
   exit(false)
 end
 
-github_name = `git config --get user.name`.strip
-upstream    = `git config --get remote.upstream.url`.strip.match(/:(.*[^\.git])/).captures.first
-branch      = "#{upstream}:#{github_name}"
+github_name  = `git config --get user.name`.strip
 
-puts `hub pull-request -m $'HW #{Time.now.strftime('%Y-%m-%d')}\n\n#{data.to_json}' -b '#{branch}'`
+
+begin
+  upstream = `git config --get remote.upstream.url`.strip.match(/:(.*[^\.git])/).captures.first
+rescue NoMethodError
+  # Upstream has not been set
+  puts "You haven't configured a remote that points to the upstream repository!".red
+  puts "Run the following then try again."
+  puts "git remote add upstream CLASS_REPO_SSH_URL"
+  exit(false)
+end
+
+branch       = "#{upstream}:#{github_name}"
+submitted_at = Time.now.strftime('%Y-%m-%d')
+
+puts `hub pull-request -m $'HW #{submitted_at}\n\n#{data.to_json}' -b '#{branch}'`
+
+puts "Thanks for submitting your homework.".green
