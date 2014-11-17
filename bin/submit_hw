@@ -6,9 +6,12 @@ require 'colorize'
 data = {}
 
 print "How many parts of the homework did you finish? "
-data["completeness"] = gets.gsub(/\W+/, '').to_i
+data["completeness"] = gets
 
-unless data["completeness"].is_a?(Integer) && data["completeness"] >= 0
+begin
+  data["completeness"] = Integer(data["completeness"])
+  raise ArgumentError if data["completeness"] < 0
+rescue ArgumentError
   puts "Invalid: not an integer (0 or greater)".red
   exit(false)
 end
@@ -23,14 +26,13 @@ end
 
 github_name  = `git config --get user.name`.strip
 
-
 begin
   upstream = `git config --get remote.upstream.url`.strip.match(/:(.*[^\.git])/).captures.first
 rescue NoMethodError
   # Upstream has not been set
   puts "You haven't configured a remote that points to the upstream repository!".red
-  puts "Run the following then try again."
-  puts "git remote add upstream CLASS_REPO_SSH_URL"
+  puts "Run the following then try again:"
+  puts " $ git remote add upstream CLASS_REPO_SSH_URL"
   exit(false)
 end
 
