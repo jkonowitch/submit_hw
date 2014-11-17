@@ -1,15 +1,15 @@
 Gem::Specification.new do |s|
-  s.name        = 'wdi-submit'
-  s.version     = '0.0.3'
-  s.date        = '2014-07-31'
+  s.name        = 'wdi-submit-hw'
+  s.version     = '0.0.1'
+  s.date        = '2014-11-17'
   s.summary     = "Submitting homework for GA's WDI."
   s.description = ""
-  s.authors     = ["Jeffrey Konowitch"]
+  s.authors     = ["Jeffrey Konowitch", "PJ Hughes"]
   s.email       = 'jeff.konowitch@ga.co'
-  s.files       = ["./bin/wdi-submit"]
-  s.homepage    = 'https://github.com/jkonowitch/submit_hw'
-  s.license       = 'MIT'
-  s.executables << 'wdi-submit'
+  s.files       = ["./bin/submit_hw"]
+  s.homepage    = 'https://github.com/ga-instructors/wdi-submit-hw'
+  s.license     = 'MIT'
+  s.executables << 'submit_hw'
 
   s.add_runtime_dependency "hub", "~> 1.12.2"
 end
