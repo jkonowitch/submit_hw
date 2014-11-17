@@ -3,6 +3,13 @@
 require 'json'
 require 'colorize'
 
+# we could move this to installfest too...
+unless ENV['HUMAN_NAME']
+  puts "Please enter your full name (first and last)" # we could say lowercase here.
+  human_name = gets.chomp.strip.downcase.gsub(' ', '_')
+  system("echo '\nexport HUMAN_NAME=#{human_name}\n' >> ~/.bash_profile && source ~/.bash_profile")
+end
+
 data = {}
 
 print "How many parts of the homework did you finish? "
@@ -24,7 +31,8 @@ unless (1..5).member?(data["comfortability"])
   exit(false)
 end
 
-github_name  = `git config --get user.name`.strip
+# github_name  = `git config --get user.name`.strip
+github_name  = ENV['HUMAN_NAME']
 
 begin
   upstream = `git config --get remote.upstream.url`.strip.match(/:(.*[^\.git])/).captures.first
