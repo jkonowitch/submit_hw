@@ -1,13 +1,6 @@
 #!/usr/bin/env ruby
-require 'pry'
+
 require 'json'
-
-hub_not_installed = `which hub`.empty?
-
-if hub_not_installed
-  puts "Please install the \`hub\` utility."
-  exit(false)
-end
 
 data = {}
 
