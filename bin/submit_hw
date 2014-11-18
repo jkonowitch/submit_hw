@@ -13,6 +13,14 @@ unless ENV['HUMAN_NAME']
   system("echo '\nexport HUMAN_NAME=#{human_name}\n' >> ~/.bash_profile")
 end
 
+def prompt_to_reload
+  puts "WARNING: this script changed your ~/.bash_profile file." + \
+       " When possible immediately run the following command:".yellow
+  puts " $ reload"
+  puts "or, if that fails:".yellow
+  puts " $ source ~/.bash_profile"
+end
+
 data = {}
 
 print "\nHow many parts of the homework did you finish? "
@@ -23,6 +31,7 @@ begin
   raise ArgumentError if data["completeness"] < 0
 rescue ArgumentError
   puts "Invalid: not an integer (0 or greater)".red
+  prompt_to_reload unless ENV['HUMAN_NAME']
   exit(false)
 end
 
@@ -31,6 +40,7 @@ data["comfortability"] = gets.gsub(/\W+/, '').to_i
 
 unless (1..5).member?(data["comfortability"])
   puts "Invalid numbers (only 1 - 3)".red
+  prompt_to_reload unless ENV['HUMAN_NAME']
   exit(false)
 end
 
@@ -45,8 +55,9 @@ begin
 rescue NoMethodError
   # Upstream has not been set
   puts "You haven't configured a remote that points to the upstream repository!".red
-  puts "Run the following then try again:"
+  puts "Run the following then try again:".red
   puts " $ git remote add upstream CLASS_REPO_SSH_URL"
+  prompt_to_reload unless ENV['HUMAN_NAME']
   exit(false)
 end
 
@@ -64,3 +75,5 @@ elsif submission.include? "No commits between"
 else
   puts "Thanks for submitting your homework.".green
 end
+
+prompt_to_reload unless ENV['HUMAN_NAME']
