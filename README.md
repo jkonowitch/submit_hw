@@ -12,5 +12,8 @@ gem install wdi-submit-hw
 
 ```bash
 cd repo_with_homework_in_it
+touch new_file
+git add new_file
+git commit -m "changes"
 submit_hw # the executable name is different from the gem name
 ```

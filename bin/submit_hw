@@ -1,6 +1,10 @@
 #!/usr/bin/env ruby
 require 'json'
+require 'yaml'
 require 'colorize'
+require 'io/console'
+require 'octokit'
+
 require 'pry'
 
 # TODO (phlco) remove Hub dependency and use github gem/api directly
@@ -11,6 +15,42 @@ unless ENV['HUMAN_NAME']
   human_name = gets.chomp.strip.downcase.gsub(' ', '_')
   system("export HUMAN_NAME=#{human_name}")
   system("echo '\nexport HUMAN_NAME=#{human_name}\n' >> ~/.bash_profile")
+end
+
+unless File.exists? File.expand_path(".config/hub","~")
+  puts "You haven't used the GitHub API with Hub before."
+  puts "We need your credentials (one time)."
+  print "Please enter your GitHub username: "
+  username = gets.chomp
+  print "Please enter your GitHub password: "
+  password = $stdin.noecho(&:gets).chomp
+  puts
+
+  client = Octokit::Client.new \
+    :login    => username,
+    :password => password
+
+  begin
+    client.user # check for bad auth and fail
+  rescue
+    puts "Authentication error. Check your username and password."
+    exit(false)
+  end
+
+  response = client.create_authorization \
+    :scopes => ["user","repo"],
+    :note => "hub token added by submit_hw"
+
+  hub_config = {
+    "github.com" => [
+      {
+        "oauth_token" => response[:token],
+        "user"        => username
+      }
+    ]
+  }.to_yaml
+
+  File.write(File.expand_path(".config/hub","~"), hub_config)
 end
 
 def prompt_to_reload
@@ -49,6 +89,7 @@ github_name = ENV['HUMAN_NAME'] || human_name
 
 puts "Pushing your work to your fork.\n".green
 `git push origin master`
+puts
 
 begin
   upstream = `git config --get remote.upstream.url`.strip.match(/:(.*)\.git/).captures.first
@@ -62,8 +103,10 @@ rescue NoMethodError
 end
 
 branch       = "#{upstream}:#{github_name}"
-submitted_at = Time.now.strftime('%Y-%m-%d')
-submission   = `hub pull-request -m $'HW #{submitted_at}\n\n#{data.to_json}' -b '#{branch}' 2>&1` # print to STDOUT
+submitted_on = Time.now.strftime('%Y-%m-%d')
+submission   = `hub pull-request -m $'HW #{submitted_on}\n\n#{data.to_json}' -b '#{branch}' 2>&1` # print to STDOUT
+
+# puts submission
 
 if submission.include? "pull request already exists"
   puts "You already have an outstanding pull request which the instructors have yet to merge! Have a great day.".yellow
