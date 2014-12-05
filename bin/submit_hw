@@ -61,6 +61,11 @@ def prompt_to_reload
   puts " $ source ~/.bash_profile"
 end
 
+def exit_script
+  prompt_to_reload unless ENV['HUMAN_NAME']
+  exit(false)
+end
+
 data = {}
 
 print "\nHow many parts of the homework did you finish? "
@@ -71,8 +76,7 @@ begin
   raise ArgumentError if data["completeness"] < 0
 rescue ArgumentError
   puts "Invalid: not an integer (0 or greater)".red
-  prompt_to_reload unless ENV['HUMAN_NAME']
-  exit(false)
+  exit_script
 end
 
 print "Comfortability [1 - 3]? "
@@ -80,8 +84,7 @@ data["comfortability"] = gets.gsub(/\W+/, '').to_i
 
 unless (1..5).member?(data["comfortability"])
   puts "Invalid numbers (only 1 - 3)".red
-  prompt_to_reload unless ENV['HUMAN_NAME']
-  exit(false)
+  exit_script
 end
 
 # github_name  = `git config --get user.name`.strip
@@ -98,8 +101,7 @@ rescue NoMethodError
   puts "You haven't configured a remote that points to the upstream repository!".red
   puts "Run the following then try again:".red
   puts " $ git remote add upstream CLASS_REPO_SSH_URL"
-  prompt_to_reload unless ENV['HUMAN_NAME']
-  exit(false)
+  exit_script
 end
 
 branch       = "#{upstream}:#{github_name}"
