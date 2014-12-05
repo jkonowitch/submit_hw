@@ -50,6 +50,9 @@ unless File.exists? File.expand_path(".config/hub","~")
     ]
   }.to_yaml
 
+  # ensure ~/.config exists
+  FileUtils.mkdir_p File.expand_path(".config","~")
+
   File.write(File.expand_path(".config/hub","~"), hub_config)
 end
 
