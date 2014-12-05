@@ -110,13 +110,13 @@ rescue NoMethodError
   exit_script
 end
 
-reconstituted_name = ENV['HUMAN_NAME'].split('_').map(&:capitalize).join(' ')
+reconstituted_name = github_name.split('_').map(&:capitalize).join(' ')
 branch       = "#{upstream}:#{github_name}"
 submitted_at = Time.now.strftime("%H:%m")
 submitted_on = Time.now.strftime('%Y-%m-%d')
 message      = "HW for #{reconstituted_name}: #{submitted_on} at #{submitted_at}\n\n#{data.to_json}"
 
-submission = `hub pull-request -m $'#{message}' -b '#{branch}' 2>&1` # print to STDOUT
+submission = `hub pull-request -m '#{message}' -b '#{branch}' 2>&1` # print to STDOUT
 
 # puts submission
 
