@@ -37,9 +37,12 @@ unless File.exists? File.expand_path(".config/hub","~")
     exit(false)
   end
 
+  # add random nuber to token name to allow multiple tokens
+  random_number = (Random.rand * 10000).to_i
+
   response = client.create_authorization \
     :scopes => ["user","repo"],
-    :note => "hub token added by submit_hw"
+    :note => "hub token added by submit_hw [#{random_number}]"
 
   hub_config = {
     "github.com" => [
