@@ -73,7 +73,7 @@ end
 # end
 
 def exit_script
-  prompt_to_reload unless `git config --get user.username`.empty? == true
+  puts "Please type 'submit_hw' and restart the submission process"
   exit(false)
 end
 
