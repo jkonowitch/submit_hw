@@ -1,13 +1,13 @@
 Gem::Specification.new do |s|
-  s.name        = "wdi-submit-hw"
-  s.version     = "0.0.6"
+  s.name        = "submit_hw"
+  s.version     = "0.1.0"
   s.date        = "2015-04-23"
-  s.summary     = "Submitting homework for GA's WDI."
+  s.summary     = "A script to submit homework for GA's WDI."
   s.description = ""
   s.authors     = ["Jeffrey Konowitch", "PJ Hughes", "Phillip Lamplugh", "Travis Vander Hoop", "Neel Patel"]
-  s.email       = "pj@ga.co"
+  s.emails      = ["jeff.konowitch@ga.co", "pj@ga.co"]
   s.files       = ["./bin/submit_hw"]
-  s.homepage    = "https://github.com/ga-instructors/wdi-submit-hw"
+  s.homepage    = "https://github.com/ga-instructors/submit_hw"
   s.license     = "MIT"
   s.executables << "submit_hw"
 
