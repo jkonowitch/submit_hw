@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = "wdi-submit-hw"
   s.version     = "0.0.5"
-  s.date        = "2014-11-17"
+  s.date        = "2015-04-23"
   s.summary     = "Submitting homework for GA's WDI."
   s.description = ""
   s.authors     = ["Jeffrey Konowitch", "PJ Hughes", "Phillip Lamplugh", "Travis Vander Hoop", "Neel Patel"]
