@@ -190,11 +190,11 @@ debug "pr_message: #{submission_msg}"
 
 # Check the submission message to ensure there were no errors
 if submission_msg.include? "pull request already exists"
-  puts ("You already have an outstanding pull request which the instructors" + \
-        "\nhave yet to merge! Have a great day.").yellow
+  puts ("You already have an outstanding pull request," + \
+        "\nand now it's been updated! Have a great day.").green
 elsif submission_msg.include? "pull request: Unprocessable Entity (HTTP 422)"
   puts ("We may not have an upstream branch for you yet. " + \
-       "Contact your Instructors!").yellow
+       "Contact your Instructors!").red
 elsif submission_msg.include? "No commits between"
   # NOTE: (phlco) we'll ignore this for now bc we probably won't get this error.
   puts "You haven't commited any changes.".red
