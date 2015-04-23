@@ -5,16 +5,21 @@ require 'colorize'
 require 'io/console'
 require 'octokit'
 
-require 'pry'
-
 # TODO (phlco) remove Hub dependency and use github gem/api directly
 
 # TODO (phlco) we could move this to installfest too
-unless ENV['HUMAN_NAME']
-  puts "Please enter your full name (first and last)" # we could say lowercase here.
-  human_name = gets.chomp.strip.downcase.gsub(' ', '_')
-  system("export HUMAN_NAME=#{human_name}")
-  system("echo '\nexport HUMAN_NAME=#{human_name}\n' >> ~/.bash_profile")
+
+unless `git config --get user.username`.empty? == false
+  puts "Please enter your Github username (it should be case sensitive). MAKE SURE IT'S CORRECT!" # we could say lowercase here.
+  github_username = gets.chomp
+  puts "Please confirm that #{github_username} is your correct Github username (Y/n)"
+  answer = gets.chomp
+  if answer.downcase == 'y'
+    system("git config --add user.username '#{github_username}'")
+  else
+    puts "You have indicated that your Github username was entered incorrectly. Please run the program again and enter it correctly"
+    exit(false)
+  end
 end
 
 unless File.exists? File.expand_path(".config/hub","~")
@@ -59,42 +64,42 @@ unless File.exists? File.expand_path(".config/hub","~")
   File.write(File.expand_path(".config/hub","~"), hub_config)
 end
 
-def prompt_to_reload
-  puts "WARNING: this script changed your ~/.bash_profile file." + \
-       " When possible immediately run the following command:".yellow
-  puts " $ reload"
-  puts "or, if that fails:".yellow
-  puts " $ source ~/.bash_profile"
-end
+# def prompt_to_reload
+#   puts "WARNING: this script changed your ~/.bash_profile file." + \
+#        " When possible immediately run the following command:".yellow
+#   puts " $ reload"
+#   puts "or, if that fails:".yellow
+#   puts " $ source ~/.bash_profile"
+# end
 
 def exit_script
-  prompt_to_reload unless ENV['HUMAN_NAME']
+  puts "Please type 'submit_hw' and restart the submission process"
   exit(false)
 end
 
 data = {}
 
-print "\nHow many parts of the homework did you finish? "
-data["completeness"] = gets
+# print "\nHow many parts of the homework did you finish? "
+# data["completeness"] = gets
 
-begin
-  data["completeness"] = Integer(data["completeness"])
-  raise ArgumentError if data["completeness"] < 0
-rescue ArgumentError
-  puts "Invalid: not an integer (0 or greater)".red
-  exit_script
-end
+# begin
+#   data["completeness"] = Integer(data["completeness"])
+#   raise ArgumentError if data["completeness"] < 0
+# rescue ArgumentError
+#   puts "Invalid: not an integer (0 or greater)".red
+#   exit_script
+# end
 
-print "Comfortability [1 - 3]? "
+print "Comfortability [1 - 5]? "
 data["comfortability"] = gets.gsub(/\W+/, '').to_i
 
 unless (1..5).member?(data["comfortability"])
-  puts "Invalid numbers (only 1 - 3)".red
+  puts "Invalid numbers (only 1 - 5)".red
   exit_script
 end
 
 # github_name  = `git config --get user.name`.strip
-github_name = ENV['HUMAN_NAME'] || human_name
+github_name = `git config --get user.username`.chomp
 
 puts "Pushing your work to your fork.\n".green
 `git push origin master`
@@ -110,11 +115,11 @@ rescue NoMethodError
   exit_script
 end
 
-reconstituted_name = github_name.split('_').map(&:capitalize).join(' ')
+# reconstituted_name = github_name.split('_').map(&:capitalize).join(' ')
 branch       = "#{upstream}:#{github_name}"
 submitted_at = Time.now.strftime("%H:%m")
 submitted_on = Time.now.strftime('%Y-%m-%d')
-message      = "HW for #{reconstituted_name}: #{submitted_on} at #{submitted_at}\n\n#{data.to_json}"
+message      = "HW for #{github_name}: #{submitted_on} at #{submitted_at}\n\n#{data.to_json}"
 
 submission = `hub pull-request -m '#{message}' -b '#{branch}' 2>&1` # print to STDOUT
 
@@ -130,5 +135,3 @@ elsif submission.include? "No commits between"
 else
   puts "Thanks for submitting your homework.".green
 end
-
-prompt_to_reload unless ENV['HUMAN_NAME']
