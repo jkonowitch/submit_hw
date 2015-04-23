@@ -13,7 +13,7 @@ require "io/console"
 if ARGV[0] == "--debug"
   puts "(running in debug mode...)"
   require "pry"
-  def debug(output); puts "[DEBUG] #{output}".yellow; end
+  def debug(output); puts "[DEBUG] #{output.chomp}".yellow; end
 else
   def debug(output); return false; end
 end
@@ -176,7 +176,7 @@ submitted_at = Time.now.strftime("%H:%m")
 submitted_on = Time.now.strftime('%Y-%m-%d')
 message      = "HW for #{human_name}: #{submitted_on} at #{submitted_at}" + \
                "\n\n#{data.to_json}"
-debug "message: #{message}"
+debug "message: #{message.split("\n").first}"
 
 # Push to their fork.
 puts "Pushing your work to your fork...\n"
