@@ -5,7 +5,7 @@ Gem::Specification.new do |s|
   s.summary     = "A script to submit homework for GA's WDI."
   s.description = ""
   s.authors     = ["Jeffrey Konowitch", "PJ Hughes", "Phillip Lamplugh", "Travis Vander Hoop", "Neel Patel"]
-  s.emails      = ["jeff.konowitch@ga.co", "pj@ga.co"]
+  s.email       = ["jeff.konowitch@ga.co", "pj@ga.co"]
   s.files       = ["./bin/submit_hw"]
   s.homepage    = "https://github.com/ga-instructors/submit_hw"
   s.license     = "MIT"
