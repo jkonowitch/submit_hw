@@ -27,13 +27,13 @@ ARGV.clear # clean out arguments from $stdin so they don't get `gets`-ed below
 #   system("echo '\nexport HUMAN_NAME=#{human_name}\n' >> ~/.bash_profile")
 # end
 
-unless `git config --get user.username`.empty? == false
+if `git config --get user.username`.empty?
   puts "Please enter your Github username (it should be case sensitive). MAKE SURE IT'S CORRECT!" # we could say lowercase here.
   github_username = gets.chomp
   puts "Please confirm that #{github_username} is your correct Github username (Y/n)"
   answer = gets.chomp
   if answer.downcase == 'y'
-    system("git config --add user.username '#{github_username}'")
+    `git config --add user.username '#{github_username}'`
   else
     puts "You have indicated that your Github username was entered incorrectly. Please run the program again and enter it correctly"
     exit(false)
@@ -60,7 +60,7 @@ unless File.exists? File.expand_path(".config/hub","~")
     exit(false)
   end
 
-  # add random nuber to token name to allow multiple tokens
+  # add random number to token name to allow multiple tokens
   random_number = (Random.rand * 10000).to_i
 
   response = client.create_authorization \
@@ -97,17 +97,18 @@ end
 
 data = {}
 
-# print "\nHow many parts of the homework did you finish? "
-# data["completeness"] = gets
+print "\nHow many parts of the homework did you finish? "
+data["completeness"] = gets
 
-# begin
-#   data["completeness"] = Integer(data["completeness"])
-#   raise ArgumentError if data["completeness"] < 0
-# rescue ArgumentError
-#   puts "Invalid: not an integer (0 or greater)".red
-#   exit_script
-# end
+begin
+  data["completeness"] = Integer(data["completeness"])
+  raise ArgumentError if data["completeness"] < 0
+rescue ArgumentError
+  puts "Invalid: not an integer (0 or greater)".red
+  exit_script
+end
 
+# TODO (CentroDL) Confirm with phlco and jadencarver about what data we want
 print "Comfortability [1 - 5]? "
 data["comfortability"] = gets.gsub(/\W+/, '').to_i
 
