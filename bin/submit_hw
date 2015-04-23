@@ -1,15 +1,20 @@
 #!/usr/bin/env ruby
+
+# require Gem dependencies
+if ARGV[0] == "-e" && ARGV[1].downcase == "development"
+  puts "(running in development mode...)"
+  Bundler.require(:default, :development)
+else
+  Bundler.require(:default)
+end
+
+# require standard libraries
 require 'json'
 require 'yaml'
-require 'colorize'
 require 'io/console'
-require 'octokit'
-
-require 'pry'
 
 # TODO (phlco) remove Hub dependency and use github gem/api directly
 
-# TODO (phlco) we could move this to installfest too
 unless ENV['HUMAN_NAME']
   puts "Please enter your full name (first and last)" # we could say lowercase here.
   human_name = gets.chomp.strip.downcase.gsub(' ', '_')
