@@ -85,7 +85,7 @@ unless File.exists? File.expand_path(".config/hub","~")
   username = gets.chomp
   print "Please enter your GitHub password: "
   password = $stdin.noecho(&:gets).chomp
-  debug "uname:pass #{username:password}" || puts # spacin' out bru!
+  debug "uname:pass #{username}:#{password}" || puts # spacin' out bru!
 
   client = Octokit::Client.new \
     :login    => username,
