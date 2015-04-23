@@ -179,11 +179,12 @@ message      = "HW for #{human_name}: #{submitted_on} at #{submitted_at}" + \
 debug "message: #{message}"
 
 # Push to their fork.
-puts "Pushing your work to your fork.\n".green
+puts "Pushing your work to your fork...\n"
 push_msg = `git push origin master 2>&1`
-debug "push_message: #{push_msg}" || puts # spacin' it out bru
+debug "push_message: #{push_msg}" #|| puts # spacin' it out bru
 
 # Submit PR to class repo in their GH named branch
+puts "Submitting a pull request...\n"
 submission_msg = `hub pull-request -m '#{message}' -b '#{branch}' 2>&1`
 debug "pr_message: #{submission_msg}"
 
