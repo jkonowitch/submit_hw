@@ -9,7 +9,7 @@ require "json"
 require "yaml"
 require "io/console"
 
-# require development dependencies (#TODO add a verbose format for debugging)
+# require development dependencies
 if ARGV[0] == "--debug"
   puts "(running in debug mode...)".yellow
   require "pry"
