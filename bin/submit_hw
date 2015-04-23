@@ -126,7 +126,7 @@ end
 # Get data from students for HW metrics.
 data = {}
 
-print "\nHow many parts of the homework did you finish? "
+print "How many parts of the homework did you finish? "
 data["completeness"] = gets
 begin
   data["completeness"] = Integer(data["completeness"])
@@ -161,8 +161,8 @@ begin
   upstream = upstream.strip.match(/:(.*)\.git/).captures.first
 rescue NoMethodError
   # Upstream has not been set
-  puts "You haven't configured a remote that points to the " + \
-       "upstream repository!".red
+  puts ("You haven't configured a remote that points to the " + \
+       "upstream repository!").red
   puts "\nRun the following then try again:".red
   puts " $ git remote add upstream CLASS_REPO_SSH_URL"
   exit_script
@@ -188,11 +188,11 @@ debug submission_msg
 
 # Check the submission message to ensure there were no errors
 if submission_msg.include? "pull request already exists"
-  puts "You already have an outstanding pull request which the instructors " + \
-       "have yet to merge! Have a great day.".yellow
+  puts ("You already have an outstanding pull request which the instructors" + \
+        "\nhave yet to merge! Have a great day.").yellow
 elsif submission_msg.include? "pull request: Unprocessable Entity (HTTP 422)"
-  puts "We may not have an upstream branch for you yet. " + \
-       "Contact your Instructors!".yellow
+  puts ("We may not have an upstream branch for you yet. " + \
+       "Contact your Instructors!").yellow
 elsif submission_msg.include? "No commits between"
   # NOTE: (phlco) we'll ignore this for now bc we probably won't get this error.
   puts "You haven't commited any changes.".red
