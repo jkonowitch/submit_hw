@@ -18,9 +18,9 @@ else
   def debug(output); return false; end
 end
 if ["-h","--help"].include? ARGV[0]
-  puts "This command must be run from a WDI Class Repo, and submits a " + \
+  puts "This must be run from the Class Repo; it submits a " + \
        "Pull Request for homework."
-  puts "If having trouble, run in verbose, debugging mode:"
+  puts "If you are having trouble, run in debug mode:"
   puts "$ submit_hw --debug"
   exit(true)
 end
