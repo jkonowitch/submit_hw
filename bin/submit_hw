@@ -47,19 +47,19 @@ end
 # Check if their gitconfig has a "human_name" entry, and if not, add it.
 # The purpose of the human_name is to make their commits more readable for
 # the IAs.
-output = `git config --get user.human_name`
-debug "user.human_name: #{output}"
+output = `git config --get user.humanname`
+debug "user.humanname: #{output}"
 if output.empty?
   print "Please enter your full, human name: "
   human_name = gets.chomp
-  output = `git config --add user.human_name '#{human_name}'`
-  debug "new user.human_name: #{output}"
+  output = `git config --add user.humanname '#{human_name}' 2>&1`
+  debug "new user.humanname: #{output}"
 end
 
 # Ensure their gitconfig has a "name" entry with their GH username, and if not, 
 # add it.
 
-output = `git config --get user.name`
+output = `git config --get user.name 2>&1`
 debug "user.name: #{output}"
 if output.empty?
   puts "Please enter your Github username (it is case sensitive)."
@@ -160,7 +160,7 @@ rescue NoMethodError
 end
 
 # Get the necessary data to form a commit message.
-human_name   = `git config --get user.human_name`.chomp
+human_name   = `git config --get user.humanname`.chomp
 github_name  = `git config --get user.name`.chomp
 branch       = "#{upstream}:#{github_name}"
 submitted_at = Time.now.strftime("%H:%m")
@@ -181,7 +181,7 @@ submission_msg = `hub pull-request -m '#{message}' -b '#{branch}' 2>&1`
 debug submission_msg
 if submission_msg.include? "pull request already exists"
   puts "You already have an outstanding pull request which the instructors have yet to merge! Have a great day.".yellow
-elsif submission_msg.include? "Error creating pull request: Internal Server Error (HTTP 500)"
+elsif submission_msg.include? "Error creating pull request: Unprocessable Entity (HTTP 422)"
   puts "We may not have an upstream branch for you yet. Contact your Instructors!".yellow
 elsif submission_msg.include? "No commits between"
   # NOTE: (phlco) we'll ignore this for now becuase we probably won't get this error.
