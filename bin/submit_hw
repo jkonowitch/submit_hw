@@ -13,6 +13,9 @@ require "io/console"
 if ARGV[0] == "--debug"
   puts "(running in debug mode...)"
   require "pry"
+  def debug(output); puts "[DEBUG] #{output}".yellow; end
+else
+  def debug(output); end
 end
 ARGV.clear # clean out arguments from $stdin so they don't get `gets`-ed below
 
@@ -26,20 +29,48 @@ ARGV.clear # clean out arguments from $stdin so they don't get `gets`-ed below
 #   system("export HUMAN_NAME=#{human_name}")
 #   system("echo '\nexport HUMAN_NAME=#{human_name}\n' >> ~/.bash_profile")
 # end
+# 
+# def prompt_to_reload
+#   puts "WARNING: this script changed your ~/.bash_profile file." + \
+#        " When possible immediately run the following command:".yellow
+#   puts " $ reload"
+#   puts "or, if that fails:".yellow
+#   puts " $ source ~/.bash_profile"
+# end
 
-if `git config --get user.username`.empty?
-  puts "Please enter your Github username (it should be case sensitive). MAKE SURE IT'S CORRECT!" # we could say lowercase here.
-  github_username = gets.chomp
-  puts "Please confirm that #{github_username} is your correct Github username (Y/n)"
-  answer = gets.chomp
-  if answer.downcase == 'y'
-    `git config --add user.username '#{github_username}'`
-  else
-    puts "You have indicated that your Github username was entered incorrectly. Please run the program again and enter it correctly"
-    exit(false)
-  end
+# Gracefully exit on error.
+def exit_script
+  puts "\nPlease type 'submit_hw' and restart the submission process.".red
+  exit(false)
 end
 
+# Check if their gitconfig has a "human_name" entry, and if not, add it.
+# The purpose of the human_name is to make their commits more readable for
+# the IAs.
+output = `git config --get user.human_name`
+debug "user.human_name: #{output}"
+if output.empty?
+  print "Please enter your full, human name: "
+  human_name = gets.chomp
+  output = `git config --add user.human_name '#{human_name}'`
+  debug "new user.human_name: #{output}"
+end
+
+# Ensure their gitconfig has a "name" entry with their GH username, and if not, 
+# add it.
+
+output = `git config --get user.name`
+debug "user.name: #{output}"
+if output.empty?
+  puts "Please enter your Github username (it is case sensitive)."
+  github_username = gets.chomp
+  output = `git config --add user.name '#{github_username}'`
+  debug "new user.name: #{output}"
+end
+
+# Check to see if they have a hub config file, which stores an auth token that
+# allows the hub command to act on their behalf with GitHub. If not, use Octokit
+# to get an auth token and save it in a new hub config file.
 unless File.exists? File.expand_path(".config/hub","~")
   puts "You haven't used the GitHub API with Hub before."
   puts "We need your credentials (one time)."
@@ -47,7 +78,7 @@ unless File.exists? File.expand_path(".config/hub","~")
   username = gets.chomp
   print "Please enter your GitHub password: "
   password = $stdin.noecho(&:gets).chomp
-  puts
+  puts # spacin' out bru!
 
   client = Octokit::Client.new \
     :login    => username,
@@ -57,7 +88,7 @@ unless File.exists? File.expand_path(".config/hub","~")
     client.user # check for bad auth and fail
   rescue
     puts "Authentication error. Check your username and password."
-    exit(false)
+    exit_script
   end
 
   # add random number to token name to allow multiple tokens
@@ -76,30 +107,21 @@ unless File.exists? File.expand_path(".config/hub","~")
     ]
   }.to_yaml
 
+  debug "hub yaml: #{hub_config}"
+
   # ensure ~/.config exists
   FileUtils.mkdir_p File.expand_path(".config","~")
 
   File.write(File.expand_path(".config/hub","~"), hub_config)
 end
 
-# def prompt_to_reload
-#   puts "WARNING: this script changed your ~/.bash_profile file." + \
-#        " When possible immediately run the following command:".yellow
-#   puts " $ reload"
-#   puts "or, if that fails:".yellow
-#   puts " $ source ~/.bash_profile"
-# end
 
-def exit_script
-  puts "Please type 'submit_hw' and restart the submission process"
-  exit(false)
-end
-
+# Get data from students for HW metrics.
+# TODO (CentroDL) Confirm with phlco and jadencarver about what data we want
 data = {}
 
 print "\nHow many parts of the homework did you finish? "
 data["completeness"] = gets
-
 begin
   data["completeness"] = Integer(data["completeness"])
   raise ArgumentError if data["completeness"] < 0
@@ -108,47 +130,60 @@ rescue ArgumentError
   exit_script
 end
 
-# TODO (CentroDL) Confirm with phlco and jadencarver about what data we want
-print "Comfortability [1 - 5]? "
-data["comfortability"] = gets.gsub(/\W+/, '').to_i
+debug data
 
-unless (1..5).member?(data["comfortability"])
-  puts "Invalid numbers (only 1 - 5)".red
-  exit_script
-end
+# print "\nDid you finish the all of the required parts of the homework? (y/n)"
+# data["completeness"] = gets
 
-# github_name  = `git config --get user.name`.strip
-github_name = `git config --get user.username`.chomp
+# unless ["y","n"].include? data["completeness"].downcase
+#   puts "Must enter 'y' or 'n'".red
+#   exit_script
+# end
 
-puts "Pushing your work to your fork.\n".green
-`git push origin master`
-puts
+# print "Comfortability [1 - 5]? "
+# data["comfortability"] = gets.gsub(/\W+/, '').to_i
 
+# unless (1..5).member?(data["comfortability"])
+#   puts "Invalid numbers (only 1 - 5)".red
+#   exit_script
+# end
+
+# Get the necessary metadata to submit the push and PR to GitHub.
 begin
   upstream = `git config --get remote.upstream.url`.strip.match(/:(.*)\.git/).captures.first
 rescue NoMethodError
   # Upstream has not been set
   puts "You haven't configured a remote that points to the upstream repository!".red
-  puts "Run the following then try again:".red
+  puts "\nRun the following then try again:".red
   puts " $ git remote add upstream CLASS_REPO_SSH_URL"
   exit_script
 end
 
-# reconstituted_name = github_name.split('_').map(&:capitalize).join(' ')
+# Get the necessary data to form a commit message.
+human_name   = `git config --get user.human_name`.chomp
+github_name  = `git config --get user.name`.chomp
 branch       = "#{upstream}:#{github_name}"
 submitted_at = Time.now.strftime("%H:%m")
 submitted_on = Time.now.strftime('%Y-%m-%d')
-message      = "HW for #{github_name}: #{submitted_on} at #{submitted_at}\n\n#{data.to_json}"
+message      = "HW for #{human_name}: #{submitted_on} at #{submitted_at}" + \
+               "\n\n#{data.to_json}"
+debug "message: #{message}"
 
-submission = `hub pull-request -m '#{message}' -b '#{branch}' 2>&1` # print to STDOUT
+# Push to their fork.
+puts "Pushing your work to your fork.\n".green
+debug `git push origin master`
+puts # spacin' it out bro
 
-# puts submission
+# Submit PR to class repo in their GH named branch
+submission_msg = `hub pull-request -m '#{message}' -b '#{branch}' 2>&1`
 
-if submission.include? "pull request already exists"
+# Check the submission message to ensure there were no errors
+debug submission_msg
+if submission_msg.include? "pull request already exists"
   puts "You already have an outstanding pull request which the instructors have yet to merge! Have a great day.".yellow
-elsif submission.include? "Error creating pull request: Internal Server Error (HTTP 500)"
+elsif submission_msg.include? "Error creating pull request: Internal Server Error (HTTP 500)"
   puts "We may not have an upstream branch for you yet. Contact your Instructors!".yellow
-elsif submission.include? "No commits between"
+elsif submission_msg.include? "No commits between"
   # NOTE: (phlco) we'll ignore this for now becuase we probably won't get this error.
   puts "You haven't commited any changes.".red
 else
