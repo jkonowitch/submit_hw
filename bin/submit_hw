@@ -15,7 +15,7 @@ if ARGV[0] == "--debug"
   require "pry"
   def debug(output); puts "[DEBUG] #{output}".yellow; end
 else
-  def debug(output); end
+  def debug(output); return false; end
 end
 ARGV.clear # clean out arguments from $stdin so they don't get `gets`-ed below
 
@@ -52,14 +52,13 @@ debug "user.humanname: #{output}"
 if output.empty?
   print "Please enter your full, human name: "
   human_name = gets.chomp
-  output = `git config --add user.humanname '#{human_name}' 2>&1`
+  output = `git config --add user.humanname '#{human_name}'`
   debug "new user.humanname: #{output}"
 end
 
 # Ensure their gitconfig has a "name" entry with their GH username, and if not, 
 # add it.
-
-output = `git config --get user.name 2>&1`
+output = `git config --get user.name`
 debug "user.name: #{output}"
 if output.empty?
   puts "Please enter your Github username (it is case sensitive)."
@@ -78,7 +77,7 @@ unless File.exists? File.expand_path(".config/hub","~")
   username = gets.chomp
   print "Please enter your GitHub password: "
   password = $stdin.noecho(&:gets).chomp
-  puts # spacin' out bru!
+  debug "uname:pass #{username:password}" || puts # spacin' out bru!
 
   client = Octokit::Client.new \
     :login    => username,
@@ -117,7 +116,6 @@ end
 
 
 # Get data from students for HW metrics.
-# TODO (CentroDL) Confirm with phlco and jadencarver about what data we want
 data = {}
 
 print "\nHow many parts of the homework did you finish? "
@@ -130,8 +128,7 @@ rescue ArgumentError
   exit_script
 end
 
-debug data
-
+# TODO (CentroDL) Confirm what data we want to capture
 # print "\nDid you finish the all of the required parts of the homework? (y/n)"
 # data["completeness"] = gets
 
@@ -148,12 +145,16 @@ debug data
 #   exit_script
 # end
 
+debug data
+
 # Get the necessary metadata to submit the push and PR to GitHub.
 begin
-  upstream = `git config --get remote.upstream.url`.strip.match(/:(.*)\.git/).captures.first
+  upstream = `git config --get remote.upstream.url`
+  upstream = upstream.strip.match(/:(.*)\.git/).captures.first
 rescue NoMethodError
   # Upstream has not been set
-  puts "You haven't configured a remote that points to the upstream repository!".red
+  puts "You haven't configured a remote that points to the " + \
+       "upstream repository!".red
   puts "\nRun the following then try again:".red
   puts " $ git remote add upstream CLASS_REPO_SSH_URL"
   exit_script
@@ -171,20 +172,21 @@ debug "message: #{message}"
 
 # Push to their fork.
 puts "Pushing your work to your fork.\n".green
-debug `git push origin master`
-puts # spacin' it out bro
+debug `git push origin master` || puts # spacin' it out bru
 
 # Submit PR to class repo in their GH named branch
 submission_msg = `hub pull-request -m '#{message}' -b '#{branch}' 2>&1`
+debug submission_msg
 
 # Check the submission message to ensure there were no errors
-debug submission_msg
 if submission_msg.include? "pull request already exists"
-  puts "You already have an outstanding pull request which the instructors have yet to merge! Have a great day.".yellow
-elsif submission_msg.include? "Error creating pull request: Unprocessable Entity (HTTP 422)"
-  puts "We may not have an upstream branch for you yet. Contact your Instructors!".yellow
+  puts "You already have an outstanding pull request which the instructors " + \
+       "have yet to merge! Have a great day.".yellow
+elsif submission_msg.include? "pull request: Unprocessable Entity (HTTP 422)"
+  puts "We may not have an upstream branch for you yet. " + \
+       "Contact your Instructors!".yellow
 elsif submission_msg.include? "No commits between"
-  # NOTE: (phlco) we'll ignore this for now becuase we probably won't get this error.
+  # NOTE: (phlco) we'll ignore this for now bc we probably won't get this error.
   puts "You haven't commited any changes.".red
 else
   puts "Thanks for submitting your homework.".green
