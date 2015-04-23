@@ -1,5 +1,7 @@
 #!/usr/bin/env ruby
 
+# TODO (phlco) remove Hub dependency and use github gem/api directly...
+
 # require dependencies
 require "octokit"
 require "colorize"
@@ -25,8 +27,6 @@ if ["-h","--help"].include? ARGV[0]
   exit(true)
 end
 ARGV.clear # clean out arguments from $stdin so they don't get `gets`-ed below
-
-# TODO (phlco) remove Hub dependency and use github gem/api directly...
 
 # NOTE: Removed in order to clean up the bash profile (this shouldn't touch it)
 # storing data in the ~/.gitconfig instead
