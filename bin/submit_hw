@@ -1,26 +1,25 @@
 #!/usr/bin/env ruby
 
-require "rubygems"
-require "bundler"
-
-# require Gem dependencies
-if ARGV[0] == "-e" && ARGV[1].downcase == "development"
-  puts "(running in development mode...)"
-  Bundler.require(:default, :development)
-else
-  Bundler.require(:default)
-end
+# require dependencies
+require "octokit"
+require "colorize"
 
 # require standard libraries
-require 'json'
-require 'yaml'
-require 'io/console'
+require "json"
+require "yaml"
+require "io/console"
 
-# TODO (phlco) remove Hub dependency and use github gem/api directly
+# require development dependencies (#TODO add a verbose format for debugging)
+if ARGV[0] == "--debug"
+  puts "(running in debug mode...)"
+  require "pry"
+end
+ARGV.clear # clean out arguments from $stdin so they don't get `gets`-ed below
 
-# Removed in order to clean up the bash profile (this shouldn't touch it)
+# TODO (phlco) remove Hub dependency and use github gem/api directly...
+
+# NOTE: Removed in order to clean up the bash profile (this shouldn't touch it)
 # storing data in the ~/.gitconfig instead
-
 # unless ENV['HUMAN_NAME']
 #   puts "Please enter your full name (first and last)" # we could say lowercase here.
 #   human_name = gets.chomp.strip.downcase.gsub(' ', '_')
