@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+require "rubygems"
+require "bundler"
+
 # require Gem dependencies
 if ARGV[0] == "-e" && ARGV[1].downcase == "development"
   puts "(running in development mode...)"
