@@ -20,6 +20,7 @@ unless `git config --get user.username`.empty? == false
     puts "You have indicated that your Github username was entered incorrectly. Please run the program again and enter it correctly"
     exit(false)
   end
+
 end
 
 unless File.exists? File.expand_path(".config/hub","~")
