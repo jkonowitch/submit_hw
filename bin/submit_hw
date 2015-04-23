@@ -17,14 +17,21 @@ if ARGV[0] == "--debug"
 else
   def debug(output); return false; end
 end
+if ["-h","--help"].include? ARGV[0]
+  puts "This command must be run from a WDI Class Repo, and submits a " + \
+       "Pull Request for homework."
+  puts "If having trouble, run in verbose, debugging mode:"
+  puts "$ submit_hw --debug"
+end
 ARGV.clear # clean out arguments from $stdin so they don't get `gets`-ed below
 
 # TODO (phlco) remove Hub dependency and use github gem/api directly...
 
 # NOTE: Removed in order to clean up the bash profile (this shouldn't touch it)
 # storing data in the ~/.gitconfig instead
+#
 # unless ENV['HUMAN_NAME']
-#   puts "Please enter your full name (first and last)" # we could say lowercase here.
+#   puts "Please enter your full name (first and last)"
 #   human_name = gets.chomp.strip.downcase.gsub(' ', '_')
 #   system("export HUMAN_NAME=#{human_name}")
 #   system("echo '\nexport HUMAN_NAME=#{human_name}\n' >> ~/.bash_profile")
