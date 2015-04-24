@@ -4,7 +4,7 @@ Gem::Specification.new do |s|
   s.date        = "2015-04-23"
   s.summary     = "A script to submit homework for GA's WDI."
   s.description = ""
-  s.authors     = ["Jeffrey Konowitch", "PJ Hughes", "Phillip Lamplugh", "Travis Vander Hoop", "Neel Patel"]
+  s.authors     = ["Jeffrey Konowitch", "PJ Hughes", "Phillip Lamplugh", "Travis Vander Hoop", "Neel Patel", "Dennis Liaw"]
   s.email       = ["jeff.konowitch@ga.co", "pj@ga.co"]
   s.files       = ["./bin/submit_hw"]
   s.homepage    = "https://github.com/ga-instructors/submit_hw"
@@ -13,5 +13,5 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency "hub",      "~> 1.12"
   s.add_runtime_dependency "octokit",  "~> 3.0"
-  s.add_runtime_dependency "colorize", "~> 0.7.3" 
+  s.add_runtime_dependency "colorize", "~> 0.7.3"
 end
