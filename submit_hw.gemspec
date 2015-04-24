@@ -1,7 +1,7 @@
 Gem::Specification.new do |s|
   s.name        = "submit_hw"
-  s.version     = "0.1.1"
-  s.date        = "2015-04-23"
+  s.version     = "0.1.2"
+  s.date        = "2015-04-24"
   s.summary     = "A script to submit homework for GA's WDI."
   s.description = ""
   s.authors     = ["Jeffrey Konowitch", "PJ Hughes", "Phillip Lamplugh", "Travis Vander Hoop", "Neel Patel", "Dennis Liaw"]
