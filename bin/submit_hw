@@ -37,7 +37,7 @@ ARGV.clear # clean out arguments from $stdin so they don't get `gets`-ed below
 #   system("export HUMAN_NAME=#{human_name}")
 #   system("echo '\nexport HUMAN_NAME=#{human_name}\n' >> ~/.bash_profile")
 # end
-# 
+#
 # def prompt_to_reload
 #   puts "WARNING: this script changed your ~/.bash_profile file." + \
 #        " When possible immediately run the following command:".yellow
@@ -64,7 +64,7 @@ if output.empty?
   debug "new user.humanname: #{output}"
 end
 
-# Ensure their gitconfig has a "name" entry with their GH username, and if not, 
+# Ensure their gitconfig has a "name" entry with their GH username, and if not,
 # add it.
 output = `git config --get user.name`
 debug "user.name: #{output}"
@@ -170,7 +170,7 @@ end
 
 # Get the necessary data to form a commit message.
 human_name   = `git config --get user.humanname`.chomp
-github_name  = `git config --get user.name`.chomp
+github_name  = `git config --get user.github`.chomp
 branch       = "#{upstream}:#{github_name}"
 submitted_at = Time.now.strftime("%H:%m")
 submitted_on = Time.now.strftime('%Y-%m-%d')
