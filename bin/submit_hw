@@ -170,7 +170,7 @@ end
 
 # Get the necessary data to form a commit message.
 human_name   = `git config --get user.humanname`.chomp
-github_name  = `git config --get user.github`.chomp
+github_name  = `git config --get user.github`.chomp.downcase
 branch       = "#{upstream}:#{github_name}"
 submitted_at = Time.now.strftime("%H:%m")
 submitted_on = Time.now.strftime('%Y-%m-%d')
