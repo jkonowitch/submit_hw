@@ -10,6 +10,7 @@ require "colorize"
 require "json"
 require "yaml"
 require "io/console"
+require "fileutils"
 
 # handle command line options
 if ARGV[0] == "--debug"
@@ -117,7 +118,7 @@ unless File.exists? File.expand_path(".config/hub","~")
   debug "hub yaml: #{hub_config}"
 
   # ensure ~/.config exists
-  FileUtils.mkdir_p File.expand_path(".config","~")
+  ::FileUtils.mkdir_p File.expand_path(".config","~")
 
   File.write(File.expand_path(".config/hub","~"), hub_config)
 end
