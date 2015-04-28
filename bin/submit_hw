@@ -158,7 +158,7 @@ debug "data: #{data}"
 
 # Get the necessary metadata to submit the push and PR to GitHub.
 begin
-  upstream = `git config --get remote.upstream.url`
+  upstream = `git config --get remote.upstream.url`.chomp
   upstream = upstream.strip.match(/:(.*)\.git/).captures.first
 rescue NoMethodError
   # Upstream has not been set
