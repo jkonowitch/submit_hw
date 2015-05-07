@@ -11,6 +11,7 @@ require "json"
 require "yaml"
 require "io/console"
 require "fileutils"
+require "date"
 
 # handle command line options
 if ARGV[0] == "--debug"
@@ -181,12 +182,14 @@ debug "message: #{message.split("\n").first}"
 
 # Push to their fork.
 puts "Pushing your work to your fork...\n"
-push_msg = `git push origin master 2>&1`
+tag = Date.today.strftime("%Y%m%d")
+tag_msg = `git tag -f #{tag}`
+push_msg = `git push origin master --tags 2>&1`
 debug "push_message: #{push_msg}" #|| puts # spacin' it out bru
 
 # Submit PR to class repo in their GH named branch
 puts "Submitting a pull request...\n"
-submission_msg = `hub pull-request -m '#{message}' -b '#{branch}' 2>&1`
+submission_msg = `hub pull-request -m '#{message}' -b '#{branch}' -h #{tag} 2>&1`
 debug "pr_message: #{submission_msg}"
 
 # Check the submission message to ensure there were no errors
